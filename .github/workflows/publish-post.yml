@@ -48,4 +48,10 @@ jobs:
           git config user.email "usmanganiyu1596@gmail.com"
           git add -A
           git commit -m "post: ${TITLE}"
+          # main may have moved since checkout; rebase on top rather than fail
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push rejected, rebasing on origin/main (attempt $i)"
+            git pull --rebase origin main || exit 1
+          done
           git push
