@@ -25,7 +25,7 @@
 html{scroll-behavior:smooth;scroll-padding-top:80px;overflow-x:clip}
 body{font-family:var(--font);background:var(--ink);color:var(--txt);line-height:1.65;padding-bottom:80px;
   overflow-x:clip;-webkit-font-smoothing:antialiased;font-feature-settings:"kern" 1}
-img{max-width:100%;display:block}
+img{max-width:100%;height:auto;display:block}
 a{color:inherit}
 ::selection{background:var(--green);color:#fff}
 a:focus-visible,button:focus-visible{outline:2px solid var(--green-2);outline-offset:3px;border-radius:6px}
