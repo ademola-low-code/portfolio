@@ -230,8 +230,9 @@ function rankGeminiModels(available) {
       return {
         name: m,
         score:
-          (v ? Number(v[1]) * 100 + Number(v[2] || 0) : 0) +   // newest generation wins
-          (m.includes('flash') ? 50 : 0) +                     // flash is free-tier friendly
+          // flash first, always: the big models have no free-tier quota and 429
+          (m.includes('flash') ? 10000 : 0) +
+          (v ? Number(v[1]) * 100 + Number(v[2] || 0) : 0) +   // then newest generation
           (/latest/.test(m) ? 10 : 0) -
           (/(lite|preview|exp|thinking|\d{3,})/.test(m) ? 30 : 0)
       };
@@ -255,44 +256,68 @@ async function callGemini(topic, recent) {
   const tried = new Set();
   let lastErr;
 
+  // One attempt. noThink asks the model to skip its reasoning pass, which is
+  // what pushes a long article past the timeout; not every model accepts the
+  // field, so a rejection is reported and the caller retries without it.
+  async function attempt(model, noThink) {
+    const generationConfig = {
+      temperature: 0.7,
+      maxOutputTokens: 8192,
+      responseMimeType: 'application/json'
+    };
+    if (noThink) generationConfig.thinkingConfig = { thinkingBudget: 0 };
+
+    const r = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(150000),
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: SYSTEM }] },
+          contents: [{ role: 'user', parts: [{ text: userPrompt(topic, recent) }] }],
+          generationConfig
+        })
+      }
+    );
+    const j = await r.json();
+    if (!r.ok) {
+      const err = new Error(`HTTP ${r.status}: ${JSON.stringify(j).slice(0, 220)}`);
+      err.status = r.status;
+      err.body = JSON.stringify(j);
+      throw err;
+    }
+    const text = j?.candidates?.[0]?.content?.parts?.map((p) => p.text).join('') || '';
+    if (!text) throw new Error(`empty response (finish: ${j?.candidates?.[0]?.finishReason || '?'})`);
+    return text;
+  }
+
   while (queue.length) {
     const model = queue.shift();
     if (tried.has(model)) continue;
     tried.add(model);
     log(`  trying model: ${model}`);
     try {
-      const r = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          // short, so a stalled model fails over instead of eating the whole run
-          signal: AbortSignal.timeout(75000),
-          body: JSON.stringify({
-            systemInstruction: { parts: [{ text: SYSTEM }] },
-            contents: [{ role: 'user', parts: [{ text: userPrompt(topic, recent) }] }],
-            generationConfig: { temperature: 0.7, maxOutputTokens: 8192, responseMimeType: 'application/json' }
-          })
-        }
-      );
-      const j = await r.json();
-      if (!r.ok) {
-        const msg = JSON.stringify(j);
-        // Google names the replacement in the 404 body — take it and jump the queue
-        const hint = msg.match(/models\/([a-z0-9.\-]+) for the latest/i);
-        if (hint && !tried.has(hint[1])) {
-          log(`  → Google suggests ${hint[1]}, trying that next`);
-          queue.unshift(hint[1]);
-        }
-        throw new Error(`HTTP ${r.status}: ${msg.slice(0, 220)}`);
+      try {
+        const text = await attempt(model, true);
+        log(`  wrote with ${model}`);
+        return text;
+      } catch (e) {
+        if (e.status !== 400) throw e;
+        log('  model rejected thinkingConfig, retrying without it');
+        const text = await attempt(model, false);
+        log(`  wrote with ${model}`);
+        return text;
       }
-      const text = j?.candidates?.[0]?.content?.parts?.map((p) => p.text).join('') || '';
-      if (!text) throw new Error('empty response');
-      log(`  wrote with ${model}`);
-      return text;
     } catch (e) {
       lastErr = e;
       log(`  ${model} failed: ${e.message}`);
+      // Google names the replacement in a 404 body — take it and jump the queue
+      const hint = (e.body || '').match(/models\/([a-z0-9.\-]+) for the latest/i);
+      if (hint && !tried.has(hint[1])) {
+        log(`  → Google suggests ${hint[1]}, trying that next`);
+        queue.unshift(hint[1]);
+      }
     }
   }
   throw lastErr;
