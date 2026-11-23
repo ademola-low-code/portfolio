@@ -13,7 +13,7 @@ Topics you add by hand are used first.
 
 ## Topics
 
-- [ ] How do I stop double-booking when guests book through different channels?
+- [x] How do I stop double-booking when guests book through different channels?
 - [ ] How can I automate invoice reminders without chasing clients myself?
 - [ ] How do I send a WhatsApp message automatically when someone fills a form?
 - [ ] How can I stop losing leads that come in at night?
@@ -33,3 +33,11 @@ Topics you add by hand are used first.
 - [ ] How can I generate and send branded invoices automatically?
 - [ ] How do I give an AI agent access to my live business data safely?
 - [ ] How can I stop my team copying the same data between apps all day?
+- [ ] Has anyone wired an AI site builder into an n8n workflow for new landing pages?
+- [ ] Anyone using n8n to track formula dispenser restocks and price drops?
+- [ ] How Do You Handle Client Credentials When Building n8n Automations for Non-Technical Clients?
+- [ ] You inherit 50 n8n workflows from another developer. What's the FIRST thing you check?
+- [ ] What's worse than a broken n8n workflow? One you already fixed… or so you thought. 😂?
+- [ ] Verified community node approved on 2 Nov, but no page on n8n.io/integrations. What do we need to do?
+- [ ] N8N Agent Slack Chat response fix?
+- [ ] How do you handle the atomic claim for webhook duplicates?

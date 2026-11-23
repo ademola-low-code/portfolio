@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-site-verification" content="sV623p7vyGP_hwC50UyK5GpEBdG9VdT76B8qMQp-D2Q">
+<title>How to Prevent Double-Bookings Across Booking.com, Airbnb and Direct — Ganiyu Usman Ademola</title>
+<meta name="description" content="Learn how to build a unified calendar sync using n8n and iCal feeds to block double-bookings across OTAs and direct channels automatically.">
+<link rel="canonical" href="https://ganiyuusman.netlify.app/blog/how-to-prevent-double-bookings-across-bookingcom-airbnb-and-direct/">
+<meta property="og:title" content="How to Prevent Double-Bookings Across Booking.com, Airbnb and Direct — Ganiyu Usman Ademola">
+<meta property="og:description" content="Learn how to build a unified calendar sync using n8n and iCal feeds to block double-bookings across OTAs and direct channels automatically.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://ganiyuusman.netlify.app/blog/how-to-prevent-double-bookings-across-bookingcom-airbnb-and-direct/">
+<meta property="og:site_name" content="Ganiyu Usman Ademola">
+<meta property="og:image" content="https://ganiyuusman.netlify.app/assets/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Ganiyu Usman Ademola — I build AI agents that run businesses while you sleep">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ganiyuusman.netlify.app/assets/img/og.jpg">
+<meta name="theme-color" content="#0C1618">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230C1618'/%3E%3Ccircle cx='10' cy='16' r='4' fill='%2317A85E'/%3E%3Crect x='16' y='14.5' width='8' height='3' rx='1.5' fill='%2317A85E'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/site.css?v=3">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"How to Prevent Double-Bookings Across Booking.com, Airbnb and Direct — Ganiyu Usman Ademola","description":"Learn how to build a unified calendar sync using n8n and iCal feeds to block double-bookings across OTAs and direct channels automatically.","datePublished":"2026-11-23T00:00:00.000Z","dateModified":"2026-11-23T00:00:00.000Z","author":{"@type":"Person","name":"Ganiyu Usman Ademola","url":"https://ganiyuusman.netlify.app"},"publisher":{"@type":"Person","name":"Ganiyu Usman Ademola"},"mainEntityOfPage":"https://ganiyuusman.netlify.app/blog/how-to-prevent-double-bookings-across-bookingcom-airbnb-and-direct/"}</script>
+</head>
+<body>
+<div class="grain"></div>
+<nav id="nav">
+  <a href="/" class="logo"><span class="logo-dot"></span>Ganiyu</a>
+  <ul class="nav-links" id="navlinks">
+    <li><a href="/#work">Work</a></li>
+    <li><a href="/#services">Services</a></li>
+    <li><a href="/#about">About</a></li>
+    <li><a href="/blog/">Blog</a></li>
+  </ul>
+  <a class="btn btn-sm btn-green" href="https://calendly.com/usmanganiyu1596/30min" target="_blank" rel="noopener">Book a Call</a>
+  <button class="menu-btn" id="menubtn" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+<article class="post">
+  <div class="wrap-narrow">
+    <div class="post-meta">
+      <span class="post-cat">Hospitality</span>
+      <span>23 November 2026</span>
+      <span>·</span>
+      <span>6 min read</span>
+    </div>
+    <h1>How to Prevent Double-Bookings Across Booking.com, Airbnb and Direct</h1>
+    <p class="excerpt">Learn how to build a unified calendar sync using n8n and iCal feeds to block double-bookings across OTAs and direct channels automatically.</p>
+    <div class="prose">
+<p>A guest books your apartment on Booking.com at 10:15 AM. At 10:18 AM, another guest confirms the same weekend via your direct website or a WhatsApp enquiry. By the time you open your phone at 10:30 AM, you have two paid reservations for one front door.</p>
+<p>Cancelling a Booking.com reservation costs you penalty fees and lowers your search ranking. Cancelling a direct guest destroys your reputation before they even check in. If you manage two to ten properties, paying $40 to $100 per month for a commercial channel manager often feels like an unnecessary fixed cost. But relying on manual calendar updates is a direct route to an overbooking crisis.</p>
+<p>Here is how to build a real-time, automated calendar sync using n8n that locks out double-bookings across Online Travel Agencies (OTAs) and direct channels, without paying monthly subscription fees per room.</p>
+<h2>The Core Architecture: Centralised Availability</h2>
+<p>Most hosts try to sync channels to each other: Airbnb to Booking.com, Booking.com to Expedia, and Expedia back to Airbnb. This creates a web of delayed updates. iCal feeds from major OTAs only refresh every 15 to 45 minutes. That delay is your double-booking window.</p>
+<p>To eliminate the window, you need a single source of truth that sits between your channels. Every incoming booking must hit this central hub first, reserve the dates instantly, and then push updated blockout dates out to all channels.</p>
+<pre><code>[ Booking.com / Airbnb / Direct ]
+              │
+              ▼
+      [ n8n Webhook / Cron ]
+              │
+              ▼
+   [ Central Database / Sheet ] ──► (Instant Check: Is Date Free?)
+              │
+     ┌────────┴────────┐
+  (Yes)              (No)
+     │                 │
+     ▼                 ▼
+[Write Lock]    [Reject &amp; Notify]
+     │
+     ▼
+[Export Central iCal Feed]
+</code></pre>
+<p>When I built ELARA—a WhatsApp concierge for a luxury spa—the core requirement was live capacity control. If a guest requested a slot, the system had to verify live availability and write a temporary lock within two seconds. If two people clicked simultaneously, only the first transaction completed. The exact same logic applies to boutique hotels and short-let apartments.</p>
+<h2>Step 1: Create the Master Calendar Ledger</h2>
+<p>Start with a dedicated database. A PostgreSQL table is ideal, but a structured Google Sheet works reliably if read/write operations are handled carefully.</p>
+<p>Set up a table named <code>reservations</code> with these mandatory columns:</p>
+<ul>
+<li><code>id</code> (UUID or auto-increment integer)</li>
+<li><code>property_id</code> (Text, e.g., <code>apt-01</code>)</li>
+<li><code>check_in</code> (Date format: <code>YYYY-MM-DD</code>)</li>
+<li><code>check_out</code> (Date format: <code>YYYY-MM-DD</code>)</li>
+<li><code>source</code> (Text: <code>booking_com</code>, <code>airbnb</code>, <code>direct</code>, <code>whatsapp</code>)</li>
+<li><code>status</code> (Text: <code>confirmed</code>, <code>blocked</code>, <code>cancelled</code>)</li>
+</ul>
+<p>Never store dates as non-standard text strings like &quot;12th Oct&quot;. Always enforce ISO dates (<code>YYYY-MM-DD</code>) so your workflow can run mathematical date comparisons.</p>
+<h2>Step 2: Capture Direct and Webhook Bookings Instantly</h2>
+<p>Direct bookings from your website, WhatsApp, or phone inquiries must write to this ledger immediately.</p>
+<p>In n8n, create a workflow triggered by a Webhook Node listening for direct booking submissions.</p>
+<ol>
+<li><strong>Webhook Node</strong>: Receives <code>property_id</code>, <code>check_in</code>, <code>check_out</code>, and guest details.</li>
+<li><strong>Execute Query Node</strong>: Check the database for overlapping dates before accepting the booking.</li>
+</ol>
+<p>Use this SQL query pattern to detect overlaps:</p>
+<pre><code class="language-sql">SELECT count(*) 
+FROM reservations 
+WHERE property_id = &#39;apt-01&#39;
+  AND status IN (&#39;confirmed&#39;, &#39;blocked&#39;)
+  AND check_in &lt; &#39;2026-04-20&#39; 
+  AND check_out &gt; &#39;2026-04-15&#39;;
+</code></pre>
+<p>If the returned count is greater than zero, the property is occupied. The workflow immediately routes to an error node, returning a failure response to the front-end or sending an alert to your team.</p>
+<p>If the count is zero, the workflow writes the new reservation record with a status of <code>confirmed</code>.</p>
+<h2>Step 3: Poll OTA iCal Feeds Every 5 Minutes</h2>
+<p>Airbnb and Booking.com expose exportable <code>.ics</code> (iCal) URLs for every listing. While they do not send webhooks when a guest books, you can poll their iCal feeds continuously.</p>
+<ol>
+<li>Add a <strong>Schedule Trigger Node</strong> in n8n set to run every 5 minutes.</li>
+<li>Add an <strong>HTTP Request Node</strong> to fetch the secret iCal URL from Airbnb or Booking.com.</li>
+<li>Pass the response raw text into a <strong>Code Node</strong> to parse the iCal format into standard JSON objects.</li>
+</ol>
+<p>Here is the JavaScript code for the n8n <strong>Code Node</strong> to extract start and end dates from an iCal file:</p>
+<pre><code class="language-javascript">const rawData = $input.first().json.data;
+const events = [];
+const veventRegex = /BEGIN:VEVENT[\s\S]*?END:VEVENT/g;
+const matches = rawData.match(veventRegex) || [];
+
+for (const match of matches) {
+  const dtstartMatch = match.match(/DTSTART(?:;VALUE=DATE)?:(\d{8})/);
+  const dtendMatch = match.match(/DTEND(?:;VALUE=DATE)?:(\d{8})/);
+  const summaryMatch = match.match(/SUMMARY:(.*)/);
+
+  if (dtstartMatch &amp;&amp; dtendMatch) {
+    const startDate = `${dtstartMatch[1].slice(0,4)}-${dtstartMatch[1].slice(4,6)}-${dtstartMatch[1].slice(6,8)}`;
+    const endDate = `${dtendMatch[1].slice(0,4)}-${dtendMatch[1].slice(4,6)}-${dtendMatch[1].slice(6,8)}`;
+    
+    events.push({
+      json: {
+        check_in: startDate,
+        check_out: endDate,
+        summary: summaryMatch ? summaryMatch[1].trim() : &#39;Reserved&#39;
+      }
+    });
+  }
+}
+
+return events;
+</code></pre>
+<ol start="4">
+<li>Pipe the output into an <strong>If Node</strong> or database upsert query to check if these dates already exist in your <code>reservations</code> table. If they do not, insert them with the source <code>airbnb</code> or <code>booking_com</code>.</li>
+</ol>
+<h2>Step 4: Export a Single Master iCal Feed</h2>
+<p>Now that your database holds every single booking—direct, WhatsApp, Airbnb, and Booking.com—you must generate one master iCal URL.</p>
+<p>Build a separate n8n workflow:</p>
+<ol>
+<li><strong>Webhook Node</strong>: Set the path to <code>/calendar/apt-01.ics</code>.</li>
+<li><strong>Database Node</strong>: Fetch all <code>confirmed</code> and <code>blocked</code> records for <code>apt-01</code> where <code>check_out &gt;= CURRENT_DATE</code>.</li>
+<li><strong>Code Node</strong>: Format the database records into a valid iCal text string.</li>
+<li><strong>Respond to Webhook Node</strong>: Return the text with the header <code>Content-Type: text/calendar</code>.</li>
+</ol>
+<p>Paste this master iCal URL into the &quot;Import Calendar&quot; section of Airbnb, Booking.com, and VRBO. Whenever these platforms fetch your master feed, they will see blocks created by all other channels.</p>
+<h2>What Usually Goes Wrong</h2>
+<p>Automating calendar syncs looks straightforward until real-world edge cases hit. Here are the three most common points of failure.</p>
+<h3>1. Checkout Day Overlaps (The Checkout/Check-in Trap)</h3>
+<p>If Guest A checks out on April 15th, and Guest B checks in on April 15th, your system must not report a conflict. </p>
+<p>If your SQL query uses simple <code>&lt;=</code> and <code>&gt;=</code> logic, it will flag April 15th as double-booked. Always use strict <code>&lt;</code> for check-in and <code>&gt;</code> for check-out comparisons:
+<code>check_in &lt; NEW_CHECK_OUT AND check_out &gt; NEW_CHECK_IN</code>
+This allows one guest to leave at 11:00 AM and the next to arrive at 3:00 PM on the same date.</p>
+<h3>2. Blind Reliance on iCal Update Frequencies</h3>
+<p>iCal is not instantaneous. Airbnb can take 15 to 30 minutes to fetch your master n8n feed. If a guest attempts to book directly while an OTA has just taken a booking, your system will not see it via iCal yet.</p>
+<p>To mitigate this, always enforce instant manual or API locks for high-value direct transactions, and set your n8n polling frequency for external iCals to no longer than 5 minutes.</p>
+<h3>3. Duplicate Records from Sync Loops</h3>
+<p>If Airbnb reads your master iCal feed and imports a direct booking block, it may export that block back out as &quot;Airbnb Reserved&quot;. If your n8n workflow ingests that block without checking summaries, it creates a duplicate record or an indefinite loop.</p>
+<p>Filter out external iCal entries whose summary or UID matches blocks originally generated by your own system.</p>
+<h2>The Honest Catch</h2>
+<p>Using n8n and iCal feeds gives you 95% of the power of a paid channel manager for zero software licensing cost. However, iCal protocol limitations mean you cannot sync dynamic daily pricing or minimum stay rules—only date availability.</p>
+<p>If you change your night rate on Booking.com, you still have to change it on Airbnb manually unless you upgrade to full API access via a PMS. But for preventing the nightmare of two guests showing up at the same door with valid keys, a lightweight database and an n8n pipeline is all you need.</p>
+
+    </div>
+    <div class="post-cta">
+      <h3>Want this built for your business?</h3>
+      <p>I build AI agents and automation systems like the ones in this article — in production, not in theory. Book a free 30-minute call and I'll map out what it would take for you.</p>
+      <a class="btn btn-lg btn-green" href="https://calendly.com/usmanganiyu1596/30min" target="_blank" rel="noopener">Book a Free Call</a>
+    </div>
+    <a class="back-link" href="/blog/">← All articles</a>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div>
+        <a href="/" class="logo" style="margin:0"><span class="logo-dot"></span>Ganiyu Usman Ademola</a>
+        <p>AI &amp; Automation Engineer building agents and workflows that remove manual work for good. Available worldwide, remote.</p>
+        <div class="socials">
+          <a class="soc" href="https://www.linkedin.com/in/usman-ademola-ganiyu-2867a422b" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg></a>
+          <a class="soc" href="https://github.com/ademola-low-code" target="_blank" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 8.84 21.5c.5.08.66-.23.66-.5v-1.7C6.73 19.91 6.14 18 6.14 18A2.69 2.69 0 0 0 5 16.5c-.91-.62.07-.6.07-.6a2.1 2.1 0 0 1 1.53 1 2.15 2.15 0 0 0 2.91.83 2.16 2.16 0 0 1 .63-1.34c-2.14-.24-4.39-1.07-4.39-4.77a3.74 3.74 0 0 1 1-2.6 3.44 3.44 0 0 1 .09-2.56s.84-.27 2.75 1a9.63 9.63 0 0 1 5 0c1.91-1.29 2.75-1 2.75-1a3.44 3.44 0 0 1 .09 2.56 3.74 3.74 0 0 1 1 2.6c0 3.71-2.26 4.53-4.41 4.77a2.4 2.4 0 0 1 .69 1.87v2.77c0 .27.16.59.67.5A10 10 0 0 0 12 2z"/></svg></a>
+          <a class="soc" href="mailto:usmanganiyu1596@gmail.com" aria-label="Email"><svg viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Navigate</h5>
+        <a href="/#work">Featured Work</a>
+        <a href="/#services">Services &amp; Pricing</a>
+        <a href="/#about">About</a>
+        <a href="/blog/">Blog</a>
+      </div>
+      <div>
+        <h5>Get In Touch</h5>
+        <a href="https://calendly.com/usmanganiyu1596/30min" target="_blank" rel="noopener">Book a 30-min call</a>
+        <a href="mailto:usmanganiyu1596@gmail.com?subject=Project%20Enquiry">usmanganiyu1596@gmail.com</a>
+        <a href="https://www.linkedin.com/in/usman-ademola-ganiyu-2867a422b" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://www.upwork.com/freelancers/~01ed8a8588148146fe" target="_blank" rel="noopener">Upwork</a>
+      </div>
+    </div>
+    <div class="fbot">
+      <span>© 2026 Ganiyu Usman Ademola</span>
+      <span>Built and automated in Ibadan, Nigeria 🇳🇬</span>
+    </div>
+  </div>
+</footer>
+<div class="pill">
+  <div class="pill-in">
+    <a href="/#home"><svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></a>
+    <a href="/#work"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg><span>Work</span></a>
+    <a href="/blog/" class="on"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span>Blog</span></a>
+    <a href="/#contact"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Contact</span></a>
+  </div>
+</div>
+<script src="/assets/js/site.js?v=3" defer></script>
+</body>
+</html>
