@@ -54,16 +54,44 @@
       </div>
     </div>
 
-    <div class="portrait-wrap rv z">
-      <svg class="node-deco" viewBox="0 0 120 120" fill="none" aria-hidden="true">
-        <path d="M14 26h34M48 26v34M48 60h34M82 60v34" stroke="#17A85E" stroke-width="1.5" stroke-dasharray="4 4"/>
-        <circle cx="14" cy="26" r="5" stroke="#17A85E" stroke-width="1.5"/>
-        <rect x="42" y="54" width="12" height="12" rx="3" stroke="#17A85E" stroke-width="1.5"/>
-        <circle cx="82" cy="94" r="5" stroke="#17A85E" stroke-width="1.5"/>
-      </svg>
-      <div class="portrait"><img src="/assets/img/photo.jpg" alt="Ganiyu Usman Ademola" width="620" height="620"></div>
-      <div class="chip chip-1"><span class="dot"></span>Agents live in <b>3</b> countries</div>
-      <div class="chip chip-2">Fastest build: <b>&lt; 24 hrs</b></div>
+    <div class="flow-wrap rv z">
+      <div class="flow-frame">
+        <div class="flow-body" id="flowBody">
+          <div class="flow-bar">
+            <div class="flow-dots"><i></i><i></i><i></i></div>
+            <div class="flow-name" id="flowName">hotel_booking_agent.workflow</div>
+            <div class="flow-live" id="flowLive">LIVE</div>
+          </div>
+
+          <svg class="flow-svg" viewBox="0 36 480 180" role="img" aria-labelledby="flowTitle">
+            <title id="flowTitle">Interactive diagram of a real automation workflow</title>
+            <path id="w1" class="wire" d="M118,72 C150,72 155,72 186,72"/>
+            <path id="w2" class="wire" d="M240,96 C240,124 200,128 178,154"/>
+            <path id="w3" class="wire" d="M254,96 C254,124 290,128 312,154"/>
+            <path id="w4" class="wire" d="M300,72 C332,72 337,72 368,72"/>
+
+            <g class="node" data-n="0" tabindex="0"><rect x="14" y="48" width="104" height="48" rx="10"/>
+              <text x="26" y="69" id="n0">WhatsApp</text><text x="26" y="84" class="sub" id="n0s">trigger</text></g>
+            <g class="node hot" data-n="1" tabindex="0"><rect x="186" y="48" width="114" height="48" rx="10"/>
+              <text x="198" y="69" id="n1">AI Agent</text><text x="198" y="84" class="sub" id="n1s">gpt-4o + memory</text></g>
+            <g class="node" data-n="2" tabindex="0"><rect x="96" y="154" width="112" height="48" rx="10"/>
+              <text x="108" y="175" id="n2">check_rooms</text><text x="108" y="190" class="sub" id="n2s">google sheets</text></g>
+            <g class="node" data-n="3" tabindex="0"><rect x="272" y="154" width="104" height="48" rx="10"/>
+              <text x="284" y="175" id="n3">book_room</text><text x="284" y="190" class="sub" id="n3s">id + receipt AI</text></g>
+            <g class="node" data-n="4" tabindex="0"><rect x="368" y="48" width="98" height="48" rx="10"/>
+              <text x="380" y="69" id="n4">Reply</text><text x="380" y="84" class="sub" id="n4s">guest confirmed</text></g>
+
+            <circle class="pulse" r="3.5"><animateMotion dur="2.4s" repeatCount="indefinite"><mpath href="#w1"/></animateMotion></circle>
+            <circle class="pulse" r="3.5"><animateMotion dur="2.4s" begin="0.8s" repeatCount="indefinite"><mpath href="#w2"/></animateMotion></circle>
+            <circle class="pulse" r="3.5"><animateMotion dur="2.4s" begin="1.2s" repeatCount="indefinite"><mpath href="#w3"/></animateMotion></circle>
+            <circle class="pulse" r="3.5"><animateMotion dur="2.4s" begin="1.6s" repeatCount="indefinite"><mpath href="#w4"/></animateMotion></circle>
+          </svg>
+
+          <div class="flow-cap" id="flowCap">Running 24/7 · tap any node to see what it does</div>
+        </div>
+
+        <div class="flow-tabs" id="flowTabs"></div>
+      </div>
     </div>
   </div>
 </header>
@@ -443,6 +471,16 @@
     </div>
   </div>
 </footer>
+
+<!-- FLOATING PILL NAV -->
+<div class="pill">
+  <div class="pill-in">
+    <a href="#home" data-sec="home" class="on"><svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></a>
+    <a href="#work" data-sec="work"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg><span>Work</span></a>
+    <a href="/blog/" data-sec="blog"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span>Blog</span></a>
+    <a href="#contact" data-sec="contact"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Contact</span></a>
+  </div>
+</div>
 
 <script src="/assets/js/site.js" defer></script>
 </body>

@@ -23,7 +23,7 @@
 
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:80px;overflow-x:clip}
-body{font-family:var(--font);background:var(--ink);color:var(--txt);line-height:1.65;
+body{font-family:var(--font);background:var(--ink);color:var(--txt);line-height:1.65;padding-bottom:80px;
   overflow-x:clip;-webkit-font-smoothing:antialiased;font-feature-settings:"kern" 1}
 img{max-width:100%;display:block}
 a{color:inherit}
@@ -100,19 +100,58 @@ h2.title em{font-style:normal;color:var(--green-2)}
 .hero-proof span{display:flex;align-items:center;gap:7px}
 .hero-proof svg{width:14px;height:14px;color:var(--green-2);flex-shrink:0}
 
-.portrait-wrap{position:relative;justify-self:center;width:min(100%,360px)}
-.portrait{position:relative;border-radius:22px;overflow:hidden;border:1px solid var(--line);box-shadow:0 34px 80px rgba(0,0,0,.55)}
-.portrait img{width:100%;filter:saturate(.95) contrast(1.03)}
-.portrait::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(12,22,24,.72))}
-.chip{position:absolute;display:flex;align-items:center;gap:8px;background:rgba(16,29,34,.93);backdrop-filter:blur(10px);
-  border:1px solid var(--line);border-radius:12px;padding:.6rem .85rem;font-size:.76rem;font-weight:500;
-  color:var(--txt);box-shadow:0 14px 34px rgba(0,0,0,.45);white-space:nowrap}
-.chip b{color:var(--green-2);font-weight:700}
-.chip-1{right:-26px;top:12%;animation:bob 5s ease-in-out infinite}
-.chip-2{left:-28px;bottom:16%;animation:bob 5s ease-in-out .9s infinite}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
-.chip .dot{width:7px;height:7px;border-radius:50%;background:var(--green-2);flex-shrink:0;animation:pulse 2.2s infinite}
-.node-deco{position:absolute;left:-52px;top:-40px;width:118px;height:118px;opacity:.55;pointer-events:none}
+/* ---------- HERO WORKFLOW DIAGRAM ---------- */
+.flow-wrap{position:relative;justify-self:stretch;width:100%}
+.flow-frame{background:var(--ink-2);border:1px solid var(--line);border-radius:18px;
+  padding:1rem 1rem .9rem;box-shadow:0 30px 70px rgba(0,0,0,.45)}
+.flow-bar{display:flex;align-items:center;gap:8px;margin-bottom:.9rem;padding:0 .2rem}
+.flow-dots{display:flex;gap:5px;flex-shrink:0}
+.flow-dots i{width:9px;height:9px;border-radius:50%;background:var(--line);display:block}
+.flow-dots i:first-child{background:var(--green)}
+.flow-name{font-size:.74rem;color:var(--txt-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  transition:opacity .35s ease}
+.flow-live{margin-left:auto;font-size:.64rem;font-weight:700;color:var(--green-2);letter-spacing:.8px;
+  display:flex;align-items:center;gap:5px;flex-shrink:0}
+.flow-live::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green-2);animation:pulse 2.2s infinite}
+
+.flow-svg{width:100%;height:auto;display:block;overflow:visible}
+.flow-svg .wire{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 4;transition:stroke .3s}
+.flow-svg .pulse{fill:var(--amber)}
+.node rect{fill:var(--ink-3);stroke:var(--line);stroke-width:1;transition:stroke .3s,fill .3s,filter .3s}
+.node text{font-family:var(--font);font-size:11px;font-weight:600;fill:#C9D8D3;pointer-events:none}
+.node .sub{font-size:8.5px;font-weight:400;fill:var(--txt-3)}
+.node.hot rect{stroke:var(--green)}
+.node{cursor:pointer;transition:transform .25s cubic-bezier(.2,.7,.3,1)}
+.node:hover,.node.sel{transform:translateY(-3px)}
+.node:hover rect,.node.sel rect{stroke:var(--green-2);fill:#1A3038;filter:drop-shadow(0 0 10px rgba(34,196,111,.35))}
+.node:hover text,.node.sel text{fill:#fff}
+
+.flow-cap{font-size:.79rem;line-height:1.55;color:var(--txt-3);text-align:center;margin-top:.9rem;
+  min-height:2.6em;padding:0 .5rem;transition:opacity .3s}
+.flow-cap b{color:var(--green-2);font-weight:600}
+.flow-tabs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:.9rem}
+.flow-tab{background:transparent;border:1px solid var(--line-soft);color:var(--txt-3);font-family:var(--font);
+  font-size:.7rem;font-weight:500;padding:.32rem .7rem;border-radius:999px;cursor:pointer;
+  transition:border-color .25s,color .25s,background .25s}
+.flow-tab:hover{border-color:var(--green);color:var(--txt-2)}
+.flow-tab.on{background:rgba(23,168,94,.14);border-color:var(--green);color:var(--green-2)}
+.flow-body{transition:opacity .35s ease}
+.flow-body.swap{opacity:.25}
+
+/* ---------- FLOATING PILL NAV ---------- */
+.pill{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:95;
+  background:rgba(12,22,24,.92);backdrop-filter:blur(14px);border:1px solid var(--line);
+  border-radius:999px;padding:6px;box-shadow:0 14px 38px rgba(0,0,0,.5)}
+.pill-in{display:flex;align-items:center;gap:3px}
+.pill a{display:flex;align-items:center;gap:7px;text-decoration:none;color:var(--txt-3);
+  font-size:.7rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  padding:9px 13px;border-radius:999px;transition:color .25s,background .25s,padding .25s}
+.pill a:hover{color:var(--txt)}
+.pill a.on{background:var(--green);color:#fff;padding:9px 16px}
+.pill a span{display:none;white-space:nowrap}
+.pill a.on span{display:inline}
+.pill svg{width:17px;height:17px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
 
 /* ---------- MARQUEE ---------- */
 .strip{border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);background:var(--ink-2);
@@ -327,8 +366,7 @@ article.post .excerpt{color:var(--txt-2);font-size:1.1rem;line-height:1.7;paddin
 /* ---------- RESPONSIVE ---------- */
 @media(max-width:1000px){
   .hero-grid{grid-template-columns:1fr;gap:2.8rem}
-  .portrait-wrap{width:min(100%,320px);justify-self:start}
-  .node-deco{display:none}
+  .flow-wrap{max-width:560px}
   .frow,.frow.flip{grid-template-columns:1fr;gap:1.6rem}
   .frow.flip .fmedia{order:0}
   .pgrid{grid-template-columns:repeat(2,1fr)}
@@ -351,9 +389,13 @@ article.post .excerpt{color:var(--txt-2);font-size:1.1rem;line-height:1.7;paddin
   .pgrid{grid-template-columns:1fr}
   .princ,.quotes{grid-template-columns:1fr}
   .fgrid{grid-template-columns:1fr}
-  .chip{font-size:.7rem;padding:.5rem .7rem}
-  .chip-1{right:-6px;top:auto;bottom:27%}
-  .chip-2{left:-6px;bottom:6%}
+  .flow-frame{padding:.8rem .7rem .7rem}
+  .node text{font-size:10px}
+  .node .sub{font-size:7.5px}
+  .flow-tab{font-size:.66rem;padding:.3rem .6rem}
+  .pill{bottom:12px;padding:5px}
+  .pill a{padding:8px 11px;font-size:.65rem}
+  .pill a.on{padding:8px 13px}
   .sec{padding:4rem 0}
   .cta{padding:2.6rem 1.4rem}
   .hero{padding-top:7.5rem}
