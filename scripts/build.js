@@ -55,7 +55,7 @@ const head = ({ title, description, url, date, mod }) => `<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/site.css">
+<link rel="stylesheet" href="/assets/css/site.css?v=3">
 ${date ? `<script type="application/ld+json">${JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -124,7 +124,7 @@ const foot = `
     <a href="/#contact"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Contact</span></a>
   </div>
 </div>
-<script src="/assets/js/site.js" defer></script>
+<script src="/assets/js/site.js?v=3" defer></script>
 </body>
 </html>`;
 
