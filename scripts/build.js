@@ -42,6 +42,7 @@ const head = ({ title, description, url, date, mod }) => `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-site-verification" content="sV623p7vyGP_hwC50UyK5GpEBdG9VdT76B8qMQp-D2Q">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${url}">
