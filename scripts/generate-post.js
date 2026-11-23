@@ -347,18 +347,44 @@ async function callAnthropic(topic, recent) {
   return (j.content || []).map((c) => c.text).join('');
 }
 
+/* The article body is markdown, so the model routinely emits real newlines
+   and tabs inside the JSON string rather than \n and \t. That is invalid
+   JSON and JSON.parse rejects it. Walk the text and escape any control
+   character that appears inside a string literal. */
+function escapeControlCharsInStrings(s) {
+  let out = '';
+  let inStr = false;
+  let esc = false;
+  for (const ch of s) {
+    if (esc) { out += ch; esc = false; continue; }
+    if (ch === '\\' && inStr) { out += ch; esc = true; continue; }
+    if (ch === '"') { inStr = !inStr; out += ch; continue; }
+    if (inStr && ch < ' ') {
+      out += ch === '\n' ? '\\n' : ch === '\r' ? '\\r' : ch === '\t' ? '\\t'
+           : '\\u' + ch.charCodeAt(0).toString(16).padStart(4, '0');
+      continue;
+    }
+    out += ch;
+  }
+  return out;
+}
+
 function parseModelJson(text) {
   let t = text.trim();
   // strip code fences if the model added them
   t = t.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
-  try {
-    return JSON.parse(t);
-  } catch (e) {
-    const first = t.indexOf('{');
-    const last = t.lastIndexOf('}');
-    if (first !== -1 && last > first) return JSON.parse(t.slice(first, last + 1));
-    throw new Error('Model did not return valid JSON: ' + t.slice(0, 200));
+
+  const first = t.indexOf('{');
+  const last = t.lastIndexOf('}');
+  const candidates = [t];
+  if (first !== -1 && last > first) candidates.push(t.slice(first, last + 1));
+
+  for (const c of candidates) {
+    for (const attempt of [c, escapeControlCharsInStrings(c)]) {
+      try { return JSON.parse(attempt); } catch (_) { /* try the next shape */ }
+    }
   }
+  throw new Error('Model did not return valid JSON: ' + t.slice(0, 200));
 }
 
 /* ---------------- main ---------------- */
