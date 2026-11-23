@@ -218,23 +218,47 @@ async function listGeminiModels(key) {
     .map((m) => m.name.replace(/^models\//, ''));
 }
 
+/* Rank the models this key can actually use, newest first.
+   Hardcoding names does not survive: Google retires them without warning and
+   ListModels keeps advertising ones that 404 for new keys. So score instead. */
+function rankGeminiModels(available) {
+  const unwanted = /(vision|image|audio|tts|live|embedding|aqa|learnlm|gemma)/;
+  return available
+    .filter((m) => m.startsWith('gemini') && !unwanted.test(m))
+    .map((m) => {
+      const v = m.match(/gemini-(\d+)(?:\.(\d+))?/);
+      return {
+        name: m,
+        score:
+          (v ? Number(v[1]) * 100 + Number(v[2] || 0) : 0) +   // newest generation wins
+          (m.includes('flash') ? 50 : 0) +                     // flash is free-tier friendly
+          (/latest/.test(m) ? 10 : 0) -
+          (/(lite|preview|exp|thinking|\d{3,})/.test(m) ? 30 : 0)
+      };
+    })
+    .sort((a, b) => b.score - a.score)
+    .map((m) => m.name);
+}
+
 async function callGemini(topic, recent) {
   const key = process.env.GEMINI_API_KEY;
   if (!key) throw new Error('GEMINI_API_KEY is not set');
 
-  let candidates = process.env.MODEL ? [process.env.MODEL] : [];
-  if (!candidates.length) {
+  let queue = process.env.MODEL ? [process.env.MODEL] : [];
+  if (!queue.length) {
     const available = await listGeminiModels(key);
-    const prefer = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-flash-latest', 'gemini-1.5-flash'];
-    candidates = prefer.filter((p) => available.includes(p));
-    // fall back to any flash model the key can actually use
-    if (!candidates.length) candidates = available.filter((m) => m.includes('flash')).slice(0, 3);
-    if (!candidates.length) candidates = available.slice(0, 2);
+    queue = rankGeminiModels(available).slice(0, 5);
+    log(`  ${available.length} models available, trying: ${queue.join(', ') || '(none)'}`);
   }
-  if (!candidates.length) throw new Error('No usable Gemini model found for this API key');
+  if (!queue.length) throw new Error('No usable Gemini model found for this API key');
 
+  const tried = new Set();
   let lastErr;
-  for (const model of candidates) {
+
+  while (queue.length) {
+    const model = queue.shift();
+    if (tried.has(model)) continue;
+    tried.add(model);
     log(`  trying model: ${model}`);
     try {
       const r = await fetch(
@@ -242,7 +266,8 @@ async function callGemini(topic, recent) {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          signal: AbortSignal.timeout(180000),
+          // short, so a stalled model fails over instead of eating the whole run
+          signal: AbortSignal.timeout(75000),
           body: JSON.stringify({
             systemInstruction: { parts: [{ text: SYSTEM }] },
             contents: [{ role: 'user', parts: [{ text: userPrompt(topic, recent) }] }],
@@ -251,9 +276,19 @@ async function callGemini(topic, recent) {
         }
       );
       const j = await r.json();
-      if (!r.ok) throw new Error(`HTTP ${r.status}: ${JSON.stringify(j).slice(0, 300)}`);
+      if (!r.ok) {
+        const msg = JSON.stringify(j);
+        // Google names the replacement in the 404 body — take it and jump the queue
+        const hint = msg.match(/models\/([a-z0-9.\-]+) for the latest/i);
+        if (hint && !tried.has(hint[1])) {
+          log(`  → Google suggests ${hint[1]}, trying that next`);
+          queue.unshift(hint[1]);
+        }
+        throw new Error(`HTTP ${r.status}: ${msg.slice(0, 220)}`);
+      }
       const text = j?.candidates?.[0]?.content?.parts?.map((p) => p.text).join('') || '';
       if (!text) throw new Error('empty response');
+      log(`  wrote with ${model}`);
       return text;
     } catch (e) {
       lastErr = e;
