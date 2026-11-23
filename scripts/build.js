@@ -119,7 +119,7 @@ const foot = `
     </div>
     <div class="fbot">
       <span>© ${new Date().getFullYear()} Ganiyu Usman Ademola</span>
-      <span>Built and automated in Ibadan, Nigeria 🇳🇬</span>
+      <span>Built and automated by hand · Remote, worldwide</span>
     </div>
   </div>
 </footer>

@@ -165,7 +165,7 @@ function readTopicsFrom(raw) {
 
 /* ---------------- the prompt ---------------- */
 
-const SYSTEM = `You are writing a blog article for Ganiyu Usman Ademola, an AI & Automation Engineer based in Ibadan, Nigeria.
+const SYSTEM = `You are writing a blog article for Ganiyu Usman Ademola, an AI & Automation Engineer working remotely with clients worldwide.
 
 WHO HE IS — use this for credibility, naturally, never as a brag list:
 - Builds production automation in n8n, Make.com and Zapier for real clients
