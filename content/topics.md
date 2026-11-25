@@ -15,7 +15,7 @@ Topics you add by hand are used first.
 
 - [x] How do I stop double-booking when guests book through different channels?
 - [x] How can I automate invoice reminders without chasing clients myself?
-- [ ] How do I send a WhatsApp message automatically when someone fills a form?
+- [x] How do I send a WhatsApp message automatically when someone fills a form?
 - [ ] How can I stop losing leads that come in at night?
 - [ ] How do I automatically log every customer enquiry in one place?
 - [ ] How can I build a WhatsApp booking bot for a small hotel?
@@ -49,3 +49,11 @@ Topics you add by hand are used first.
 - [ ] If an n8n beginner could only build one foundational automation, what should it be?
 - [ ] N8n's MCP server - are you using it to create workflows?
 - [ ] Local OCR in n8n with Ollama: How to extract text from scanned PDFs without external services?
+- [ ] How to Automate Website Contact Forms Using n8n as a Beginner?
+- [ ] How do I handle password-protected PDFs in a batch workflow?
+- [ ] Building n8n automations for several clients: how do you split and rebill the AI costs?
+- [ ] Comment automatiser la publication et l'optimisation de contenu sur TikTok avec n8n?
+- [ ] Node.js November 2026 security release – ETA for updated n8n Docker images?
+- [ ] How to Set Up an Error Workflow in n8n Before Production Fails?
+- [ ] What's your most profitable n8n workflow?What's your most profitable n8n workflow?
+- [ ] How do you monitor n8n workflows in production and detect failures early?
