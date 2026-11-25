@@ -14,7 +14,7 @@ Topics you add by hand are used first.
 ## Topics
 
 - [x] How do I stop double-booking when guests book through different channels?
-- [ ] How can I automate invoice reminders without chasing clients myself?
+- [x] How can I automate invoice reminders without chasing clients myself?
 - [ ] How do I send a WhatsApp message automatically when someone fills a form?
 - [ ] How can I stop losing leads that come in at night?
 - [ ] How do I automatically log every customer enquiry in one place?
@@ -41,3 +41,11 @@ Topics you add by hand are used first.
 - [ ] Verified community node approved on 2 Nov, but no page on n8n.io/integrations. What do we need to do?
 - [ ] N8N Agent Slack Chat response fix?
 - [ ] How do you handle the atomic claim for webhook duplicates?
+- [ ] Would you pay $29/mo to know when a client's workflow fails silently?
+- [ ] Would you let AI fix and publish an n8n workflow without reviewing the changes?
+- [ ] Which n8n Docker image/setup should we use for a new self-hosted deployment?
+- [ ] What I check to keep a self-hosted n8n governable (and the small open-source tool I built for it)?
+- [ ] How to Set Up an Error Workflow in n8n Before Production Fails?
+- [ ] If an n8n beginner could only build one foundational automation, what should it be?
+- [ ] N8n's MCP server - are you using it to create workflows?
+- [ ] Local OCR in n8n with Ollama: How to extract text from scanned PDFs without external services?
