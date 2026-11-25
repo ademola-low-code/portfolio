@@ -200,14 +200,16 @@ const userPrompt = (topic, recent) => `Write the article answering this question
 
 Already published (do not repeat these angles): ${recent.length ? recent.join(' | ') : 'none yet'}
 
-Return STRICT JSON, nothing else, in this exact shape:
-{
-  "title": "A clear specific title, under 70 characters, phrased the way someone would search for it",
-  "description": "One sentence for Google, 120-158 characters, says what the reader will be able to do",
-  "category": "one of: n8n & Integrations, AI Agents, CRM & Sales, Business Operations, Customer Support, Hospitality, Healthcare",
-  "tags": ["3-5", "lowercase", "tags"],
-  "body": "the full markdown article"
-}`;
+Reply in EXACTLY this plain-text format and nothing else. No JSON, no code fence around the whole reply.
+
+TITLE: A clear specific title, under 70 characters, phrased the way someone would search for it
+DESCRIPTION: One sentence for Google, 120-158 characters, saying what the reader will be able to do
+CATEGORY: one of: n8n & Integrations, AI Agents, CRM & Sales, Business Operations, Customer Support, Hospitality, Healthcare
+TAGS: three to five lowercase tags, comma separated
+---BODY---
+The full markdown article goes here. Write it as normal markdown — headings,
+lists, and \`\`\` code blocks are all fine, and you do not need to escape
+anything. Everything after the ---BODY--- line is the article.`;
 
 /* ---------------- model calls ---------------- */
 
@@ -253,7 +255,7 @@ async function callGemini(topic, recent) {
   }
   if (!queue.length) throw new Error('No usable Gemini model found for this API key');
 
-  const tried = new Set();
+  const shortlist = [...queue];
   let lastErr;
 
   // One attempt. noThink asks the model to skip its reasoning pass, which is
@@ -262,8 +264,7 @@ async function callGemini(topic, recent) {
   async function attempt(model, noThink) {
     const generationConfig = {
       temperature: 0.7,
-      maxOutputTokens: 8192,
-      responseMimeType: 'application/json'
+      maxOutputTokens: 16384
     };
     if (noThink) generationConfig.thinkingConfig = { thinkingBudget: 0 };
 
@@ -288,11 +289,27 @@ async function callGemini(topic, recent) {
       throw err;
     }
     const text = j?.candidates?.[0]?.content?.parts?.map((p) => p.text).join('') || '';
-    if (!text) throw new Error(`empty response (finish: ${j?.candidates?.[0]?.finishReason || '?'})`);
+    const finish = j?.candidates?.[0]?.finishReason;
+    if (!text) throw new Error(`empty response (finish: ${finish || '?'})`);
+    if (finish && finish !== 'STOP') throw new Error(`response cut short (finish: ${finish})`);
     return text;
   }
 
-  while (queue.length) {
+  /* The free tier gets saturated: every model can return 503 "high demand"
+     within the same second, which is what killed Monday's post. Those clear
+     on their own, so sweep the shortlist, wait, and sweep it again rather
+     than giving up on the first bad minute. */
+  const ROUNDS = 3;
+  for (let round = 1; round <= ROUNDS; round++) {
+    if (round > 1) {
+      const wait = 90 * (round - 1);
+      log(`  every model was busy — waiting ${wait}s, then sweep ${round} of ${ROUNDS}`);
+      await new Promise((r) => setTimeout(r, wait * 1000));
+    }
+    queue = [...shortlist];
+    const tried = new Set();
+
+    while (queue.length) {
     const model = queue.shift();
     if (tried.has(model)) continue;
     tried.add(model);
@@ -319,6 +336,12 @@ async function callGemini(topic, recent) {
         queue.unshift(hint[1]);
       }
     }
+    }
+
+    // only a busy service is worth waiting out; a real fault will not fix itself
+    const retryable = lastErr && (lastErr.status === 503 || lastErr.status === 429 ||
+                                  /timeout|aborted|fetch failed/i.test(lastErr.message || ''));
+    if (!retryable) break;
   }
   throw lastErr;
 }
@@ -369,22 +392,55 @@ function escapeControlCharsInStrings(s) {
   return out;
 }
 
-function parseModelJson(text) {
-  let t = text.trim();
-  // strip code fences if the model added them
-  t = t.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+/* Primary format: plain text with a ---BODY--- delimiter. Markdown inside JSON
+   was the recurring failure — the model has to escape every newline and quote
+   in a long article, and sooner or later it does not. Nothing needs escaping
+   here, so there is nothing to get wrong. */
+function parseDelimited(text) {
+  const m = text.split(/^\s*-{2,}\s*BODY\s*-{2,}\s*$/mi);
+  if (m.length < 2) return null;
+  const head = m[0];
+  const body = m.slice(1).join('---BODY---').trim();
+  const field = (name) => {
+    const r = head.match(new RegExp('^\\s*' + name + '\\s*:\\s*(.+)$', 'mi'));
+    return r ? r[1].trim().replace(/^["']|["']$/g, '') : '';
+  };
+  const title = field('TITLE');
+  if (!title || !body) return null;
+  return {
+    title,
+    description: field('DESCRIPTION'),
+    category: field('CATEGORY') || 'n8n & Integrations',
+    tags: field('TAGS').split(/\s*,\s*/).filter(Boolean).map((t) => t.toLowerCase()),
+    body
+  };
+}
 
+function parseModelOutput(text) {
+  let t = text.trim().replace(/^```(?:json|markdown|text)?\s*/i, '').replace(/```\s*$/, '').trim();
+
+  const delimited = parseDelimited(t);
+  if (delimited) return delimited;
+
+  // fall back to the old JSON shape, repaired, in case the model ignores the format
   const first = t.indexOf('{');
   const last = t.lastIndexOf('}');
   const candidates = [t];
   if (first !== -1 && last > first) candidates.push(t.slice(first, last + 1));
-
   for (const c of candidates) {
     for (const attempt of [c, escapeControlCharsInStrings(c)]) {
-      try { return JSON.parse(attempt); } catch (_) { /* try the next shape */ }
+      try {
+        const o = JSON.parse(attempt);
+        if (o && o.title && o.body) return o;
+      } catch (_) { /* try the next shape */ }
     }
   }
-  throw new Error('Model did not return valid JSON: ' + t.slice(0, 200));
+  // show both ends — the tail is what reveals a truncated response
+  throw new Error(
+    `Model output not parseable (${t.length} chars).\n` +
+    `--- first 400 ---\n${t.slice(0, 400)}\n` +
+    `--- last 400 ---\n${t.slice(-400)}`
+  );
 }
 
 /* ---------------- main ---------------- */
@@ -409,7 +465,7 @@ function parseModelJson(text) {
     ? await callAnthropic(topic.text, recent)
     : await callGemini(topic.text, recent);
 
-  const post = parseModelJson(raw);
+  const post = parseModelOutput(raw);
 
   for (const f of ['title', 'description', 'body']) {
     if (!post[f] || String(post[f]).trim().length < 10) throw new Error(`Model returned no usable "${f}"`);
