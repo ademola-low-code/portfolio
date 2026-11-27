@@ -16,7 +16,7 @@ Topics you add by hand are used first.
 - [x] How do I stop double-booking when guests book through different channels?
 - [x] How can I automate invoice reminders without chasing clients myself?
 - [x] How do I send a WhatsApp message automatically when someone fills a form?
-- [ ] How can I stop losing leads that come in at night?
+- [x] How can I stop losing leads that come in at night?
 - [ ] How do I automatically log every customer enquiry in one place?
 - [ ] How can I build a WhatsApp booking bot for a small hotel?
 - [ ] How do I connect a website contact form to my CRM automatically?
@@ -57,3 +57,11 @@ Topics you add by hand are used first.
 - [ ] How to Set Up an Error Workflow in n8n Before Production Fails?
 - [ ] What's your most profitable n8n workflow?What's your most profitable n8n workflow?
 - [ ] How do you monitor n8n workflows in production and detect failures early?
+- [ ] Do you use a project management tool to track AI automation and agent tasks?
+- [ ] Looking for Guidance: How Should Someone With Zero Tech Background Start Learning n8n?
+- [ ] How to Set Up an Error Workflow in n8n Before Production Fails?
+- [ ] When a workflow quietly stopped in your own business, who noticed first?
+- [ ] Google Search and Google Alerts, and other API-based services, return vastly different numbers of results?
+- [ ] Why do some Gmail meeting invites show "Add to Calendar" while others are added automatically?
+- [ ] WhatsApp web: group is muted, but still shows desktop notifications, how to fix?
+- [ ] Conditional Formatting in Google Sheets Not Working For 1 of 4 Conditions I Made, Why?

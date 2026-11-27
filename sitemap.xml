@@ -2,6 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://ganiyuusman.netlify.app/</loc><priority>1.0</priority></url>
   <url><loc>https://ganiyuusman.netlify.app/blog/</loc><priority>0.8</priority></url>
+  <url><loc>https://ganiyuusman.netlify.app/blog/how-to-handle-after-hours-leads-with-n8n-and-ai/</loc><lastmod>2026-11-27</lastmod><priority>0.7</priority></url>
   <url><loc>https://ganiyuusman.netlify.app/blog/how-to-automate-invoice-reminders-with-n8n-and-google-sheets/</loc><lastmod>2026-11-25</lastmod><priority>0.7</priority></url>
   <url><loc>https://ganiyuusman.netlify.app/blog/how-to-send-automatic-whatsapp-messages-from-form-submissions/</loc><lastmod>2026-11-25</lastmod><priority>0.7</priority></url>
   <url><loc>https://ganiyuusman.netlify.app/blog/how-to-prevent-double-bookings-across-bookingcom-airbnb-and-direct/</loc><lastmod>2026-11-23</lastmod><priority>0.7</priority></url>
