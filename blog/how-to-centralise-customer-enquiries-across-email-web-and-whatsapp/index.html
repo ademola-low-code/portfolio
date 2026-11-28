@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-site-verification" content="sV623p7vyGP_hwC50UyK5GpEBdG9VdT76B8qMQp-D2Q">
+<title>How to Centralise Customer Enquiries Across Email, Web, and WhatsApp — Ganiyu Usman Ademola</title>
+<meta name="description" content="Build an n8n workflow that routes web forms, emails, and WhatsApp messages into a single master sheet without missing data or duplicating contacts.">
+<link rel="canonical" href="https://ganiyuusman.netlify.app/blog/how-to-centralise-customer-enquiries-across-email-web-and-whatsapp/">
+<meta property="og:title" content="How to Centralise Customer Enquiries Across Email, Web, and WhatsApp — Ganiyu Usman Ademola">
+<meta property="og:description" content="Build an n8n workflow that routes web forms, emails, and WhatsApp messages into a single master sheet without missing data or duplicating contacts.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://ganiyuusman.netlify.app/blog/how-to-centralise-customer-enquiries-across-email-web-and-whatsapp/">
+<meta property="og:site_name" content="Ganiyu Usman Ademola">
+<meta property="og:image" content="https://ganiyuusman.netlify.app/assets/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Ganiyu Usman Ademola — I build AI agents that run businesses while you sleep">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ganiyuusman.netlify.app/assets/img/og.jpg">
+<meta name="theme-color" content="#0C1618">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230C1618'/%3E%3Ccircle cx='10' cy='16' r='4' fill='%2317A85E'/%3E%3Crect x='16' y='14.5' width='8' height='3' rx='1.5' fill='%2317A85E'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/site.css?v=3">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"How to Centralise Customer Enquiries Across Email, Web, and WhatsApp — Ganiyu Usman Ademola","description":"Build an n8n workflow that routes web forms, emails, and WhatsApp messages into a single master sheet without missing data or duplicating contacts.","datePublished":"2026-11-28T00:00:00.000Z","dateModified":"2026-11-28T00:00:00.000Z","author":{"@type":"Person","name":"Ganiyu Usman Ademola","url":"https://ganiyuusman.netlify.app"},"publisher":{"@type":"Person","name":"Ganiyu Usman Ademola"},"mainEntityOfPage":"https://ganiyuusman.netlify.app/blog/how-to-centralise-customer-enquiries-across-email-web-and-whatsapp/"}</script>
+</head>
+<body>
+<div class="grain"></div>
+<nav id="nav">
+  <a href="/" class="logo"><span class="logo-dot"></span>Ganiyu</a>
+  <ul class="nav-links" id="navlinks">
+    <li><a href="/#work">Work</a></li>
+    <li><a href="/#services">Services</a></li>
+    <li><a href="/#about">About</a></li>
+    <li><a href="/blog/">Blog</a></li>
+  </ul>
+  <a class="btn btn-sm btn-green" href="https://calendly.com/usmanganiyu1596/30min" target="_blank" rel="noopener">Book a Call</a>
+  <button class="menu-btn" id="menubtn" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+<article class="post">
+  <div class="wrap-narrow">
+    <div class="post-meta">
+      <span class="post-cat">Business Operations</span>
+      <span>28 November 2026</span>
+      <span>·</span>
+      <span>5 min read</span>
+    </div>
+    <h1>How to Centralise Customer Enquiries Across Email, Web, and WhatsApp</h1>
+    <p class="excerpt">Build an n8n workflow that routes web forms, emails, and WhatsApp messages into a single master sheet without missing data or duplicating contacts.</p>
+    <div class="prose">
+<p>Your business receives customer enquiries through at least three different channels: your website form, your main contact email, and your WhatsApp Business line. Right now, these messages live in three separate places. Someone has to check the inbox, read the form notification emails, scroll through WhatsApp chat logs, and manually paste details into a sheet or CRM.</p>
+<p>When you do this manually, three things happen. First, enquiries drop through the cracks during busy shifts. Second, response times drag out from minutes to hours. Third, you have no single source of truth to see how many new leads actually came in this week.</p>
+<p>The goal is simple: log every enquiry into one central sheet automatically, regardless of where it came from, with the same structure, in real time. Here is how to build this system properly using n8n.</p>
+<h2>The Architecture: Three Triggers, One Master Format</h2>
+<p>The biggest mistake people make when centralising data is building separate automation workflows for each channel that write to a database in different ways. That creates inconsistent data. </p>
+<p>Instead, you use a single n8n workflow with multiple trigger nodes, or standardise the incoming payload early so that every lead hits your spreadsheet looking identical.</p>
+<p>Your central log needs six core columns:</p>
+<ol>
+<li><strong>Timestamp</strong> (ISO standard format)</li>
+<li><strong>Channel</strong> (Web, Email, WhatsApp)</li>
+<li><strong>Contact Name</strong></li>
+<li><strong>Contact Detail</strong> (Email address or phone number)</li>
+<li><strong>Message / Enquiry</strong></li>
+<li><strong>Status</strong> (Default to &quot;New&quot;)</li>
+</ol>
+<p>Here is how the data flows from each source.</p>
+<h2>Step 1: Capture Web Forms Instantly</h2>
+<p>If you use Elementor, Typeform, Tally, or custom HTML forms, do not rely on email notifications as your trigger. Webhooks are faster and do not break when an email server alters the formatting.</p>
+<ol>
+<li>Add a <strong>Webhook Trigger</strong> node in n8n. Set the HTTP Method to <code>POST</code>.</li>
+<li>Copy the Webhook URL generated by n8n.</li>
+<li>Paste this URL into your form builder&#39;s webhook setting.</li>
+<li>Send a test submission.</li>
+</ol>
+<p>In n8n, you will receive a JSON payload. Use a <strong>Edit Fields (Set)</strong> node immediately after the webhook to map the form fields to your standard structure:</p>
+<pre><code class="language-json">{
+  &quot;timestamp&quot;: &quot;={{ $now }}&quot;,
+  &quot;channel&quot;: &quot;Web Form&quot;,
+  &quot;name&quot;: &quot;={{ $json.body.first_name }} {{ $json.body.last_name }}&quot;,
+  &quot;contact&quot;: &quot;={{ $json.body.email }}&quot;,
+  &quot;message&quot;: &quot;={{ $json.body.message }}&quot;,
+  &quot;status&quot;: &quot;New&quot;
+}
+</code></pre>
+<h2>Step 2: Route Incoming Emails Without Reading Spam</h2>
+<p>For email enquiries (e.g., <code>info@yourcompany.com</code>), use the <strong>Gmail</strong> or <strong>Microsoft Outlook</strong> node with an event trigger for <em>On New Email Received</em>.</p>
+<p>To prevent logging internal updates, newsletters, or spam, apply a filter immediately after the trigger:</p>
+<ul>
+<li>Exclude messages where the sender domain matches your own company domain.</li>
+<li>Exclude messages containing headers like <code>List-Unsubscribe</code>.</li>
+<li>Only capture emails sent directly to your sales or support address.</li>
+</ul>
+<p>Pass the filtered output to an <strong>Edit Fields</strong> node:</p>
+<pre><code class="language-json">{
+  &quot;timestamp&quot;: &quot;={{ $json.date }}&quot;,
+  &quot;channel&quot;: &quot;Email&quot;,
+  &quot;name&quot;: &quot;={{ $json.from.name || $json.from.address }}&quot;,
+  &quot;contact&quot;: &quot;={{ $json.from.address }}&quot;,
+  &quot;message&quot;: &quot;={{ $json.snippet }}&quot;,
+  &quot;status&quot;: &quot;New&quot;
+}
+</code></pre>
+<h2>Step 3: Capture WhatsApp Messages</h2>
+<p>If you use Meta&#39;s Cloud API or a service like Twilio, add the corresponding trigger node. When a customer sends a message to your business number, Meta sends a webhook payload containing the sender&#39;s phone number, profile name, and message body.</p>
+<p>Map this payload in a third <strong>Edit Fields</strong> node:</p>
+<pre><code class="language-json">{
+  &quot;timestamp&quot;: &quot;={{ $now }}&quot;,
+  &quot;channel&quot;: &quot;WhatsApp&quot;,
+  &quot;name&quot;: &quot;={{ $json.entry[0].changes[0].value.contacts[0].profile.name }}&quot;,
+  &quot;contact&quot;: &quot;={{ $json.entry[0].changes[0].value.messages[0].from }}&quot;,
+  &quot;message&quot;: &quot;={{ $json.entry[0].changes[0].value.messages[0].text.body }}&quot;,
+  &quot;status&quot;: &quot;New&quot;
+}
+</code></pre>
+<h2>Step 4: Normalise and Deduplicate</h2>
+<p>Connect the outputs of all three <strong>Edit Fields</strong> nodes into a single downstream branch. </p>
+<p>Before writing to your database, you must deduplicate. Customers often fill in a form, panic when they do not get an immediate answer, and send a WhatsApp message 60 seconds later.</p>
+<p>Use an n8n <strong>Google Sheets</strong> (or <strong>Airtable</strong>) node set to <strong>Append or Update Row</strong>:</p>
+<ul>
+<li><strong>Column to match on</strong>: <code>Contact Detail</code> (Email or Phone number).</li>
+<li>If the contact exists and their status is already marked as &quot;In Progress&quot; or &quot;Resolved&quot;, update the <code>Message</code> column by appending the new text rather than creating a duplicate lead row.</li>
+<li>If the contact does not exist, append a new row.</li>
+</ul>
+<p>When I built <em>StayEase</em>, a guest-request system running on n8n and Google Sheets, using standard HTTP triggers and clean deduplication meant handling hundreds of requests across multiple properties without paid database infrastructure or missing records.</p>
+<h2>What Usually Goes Wrong</h2>
+<p>Building the basic flow takes under an hour. Keeping it reliable when real humans interact with it takes a bit more care.</p>
+<h3>1. Webhook Payloads Changing Without Notice</h3>
+<p>Form plugins frequently update their output structure during plugin updates. If your web form sends <code>user_email</code> on Monday and changes to <code>email_address</code> after a update on Tuesday, your workflow will start writing blank email fields to your spreadsheet.
+<em>Fix:</em> Add an n8n <strong>If</strong> node that checks if the contact field is empty before writing to the sheet. If it is empty, route the payload to an error alert on Slack or email so you spot the broken field mapping immediately.</p>
+<h3>2. Formatted Phone Numbers Breaking Deduplication</h3>
+<p>A user enters <code>07123 456789</code> on your website form, but WhatsApp sends their number as <code>447123456789</code>. Your sheet will treat them as two different customers.
+<em>Fix:</em> Strip all non-numeric characters using a short regex replace in a Code node: <code>{{ $json.phone.replace(/\D/g, &#39;&#39;) }}</code>. Convert local numbers to international format before matching.</p>
+<h3>3. Media Messages Crashing the Flow</h3>
+<p>On WhatsApp or email, customers frequently reply with images, voice notes, or PDF attachments instead of plain text. A pipeline built solely for string fields will fail when <code>$json.text.body</code> comes back as undefined.
+<em>Fix:</em> Use fallback logic in your expressions. For example: <code>={{ $json.message || &#39;[Media File Received]&#39; }}</code>. </p>
+<p>When I built a Twilio MMS-to-email pipeline for an Australian marketing agency, handling media attachments properly meant checking for media headers before processing text streams. If an attachment exists, upload it to a cloud bucket (or Google Drive) and log the public link in the sheet alongside the text.</p>
+<h3>4. Rate Limits on High-Volume Days</h3>
+<p>If you run a ad campaign and receive 50 web forms in two minutes, Google Sheets API will temporarily throw a <code>429 Too Many Requests</code> error. n8n will drop those executions unless configured to handle retries.
+<em>Fix:</em> Open the settings tab on your Google Sheets node in n8n. Toggle <strong>Retry on Fail</strong> to ON, set Max Tries to <code>5</code>, and set Wait Between Tries to <code>5000</code> ms.</p>
+<h2>The Limits of a Master Sheet</h2>
+<p>A single Google Sheet or Airtable base is the right place to start for up to roughly 2,000 enquiries a month. It gives your team immediate visibility without the overhead of learning a full CRM.</p>
+<p>However, a spreadsheet is not a ticketing system. Once multiple team members start replying to enquiries directly from their own phones or personal email accounts, you lose track of who responded to what. </p>
+<p>At that point, keep the n8n ingestion logic you just built, but swap the final Google Sheets node for an API call to a proper inbox tool like Crisp, Hubspot, or Zendesk. The workflow structure remains identical; only the storage location changes.</p>
+
+    </div>
+    <div class="post-cta">
+      <h3>Want this built for your business?</h3>
+      <p>I build AI agents and automation systems like the ones in this article — in production, not in theory. Book a free 30-minute call and I'll map out what it would take for you.</p>
+      <a class="btn btn-lg btn-green" href="https://calendly.com/usmanganiyu1596/30min" target="_blank" rel="noopener">Book a Free Call</a>
+    </div>
+    <a class="back-link" href="/blog/">← All articles</a>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div>
+        <a href="/" class="logo" style="margin:0"><span class="logo-dot"></span>Ganiyu Usman Ademola</a>
+        <p>AI &amp; Automation Engineer building agents and workflows that remove manual work for good. Available worldwide, remote.</p>
+        <div class="socials">
+          <a class="soc" href="https://www.linkedin.com/in/usman-ademola-ganiyu-2867a422b" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg></a>
+          <a class="soc" href="https://github.com/ademola-low-code" target="_blank" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 8.84 21.5c.5.08.66-.23.66-.5v-1.7C6.73 19.91 6.14 18 6.14 18A2.69 2.69 0 0 0 5 16.5c-.91-.62.07-.6.07-.6a2.1 2.1 0 0 1 1.53 1 2.15 2.15 0 0 0 2.91.83 2.16 2.16 0 0 1 .63-1.34c-2.14-.24-4.39-1.07-4.39-4.77a3.74 3.74 0 0 1 1-2.6 3.44 3.44 0 0 1 .09-2.56s.84-.27 2.75 1a9.63 9.63 0 0 1 5 0c1.91-1.29 2.75-1 2.75-1a3.44 3.44 0 0 1 .09 2.56 3.74 3.74 0 0 1 1 2.6c0 3.71-2.26 4.53-4.41 4.77a2.4 2.4 0 0 1 .69 1.87v2.77c0 .27.16.59.67.5A10 10 0 0 0 12 2z"/></svg></a>
+          <a class="soc" href="mailto:usmanganiyu1596@gmail.com" aria-label="Email"><svg viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Navigate</h5>
+        <a href="/#work">Featured Work</a>
+        <a href="/#services">Services &amp; Pricing</a>
+        <a href="/#about">About</a>
+        <a href="/blog/">Blog</a>
+      </div>
+      <div>
+        <h5>Get In Touch</h5>
+        <a href="https://calendly.com/usmanganiyu1596/30min" target="_blank" rel="noopener">Book a 30-min call</a>
+        <a href="mailto:usmanganiyu1596@gmail.com?subject=Project%20Enquiry">usmanganiyu1596@gmail.com</a>
+        <a href="https://www.linkedin.com/in/usman-ademola-ganiyu-2867a422b" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://www.upwork.com/freelancers/~01ed8a8588148146fe" target="_blank" rel="noopener">Upwork</a>
+      </div>
+    </div>
+    <div class="fbot">
+      <span>© 2026 Ganiyu Usman Ademola</span>
+      <span>Built and automated by hand · Remote, worldwide</span>
+    </div>
+  </div>
+</footer>
+<div class="pill">
+  <div class="pill-in">
+    <a href="/#home"><svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Home</span></a>
+    <a href="/#work"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg><span>Work</span></a>
+    <a href="/blog/" class="on"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span>Blog</span></a>
+    <a href="/#contact"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Contact</span></a>
+  </div>
+</div>
+<script src="/assets/js/site.js?v=3" defer></script>
+</body>
+</html>

@@ -17,7 +17,7 @@ Topics you add by hand are used first.
 - [x] How can I automate invoice reminders without chasing clients myself?
 - [x] How do I send a WhatsApp message automatically when someone fills a form?
 - [x] How can I stop losing leads that come in at night?
-- [ ] How do I automatically log every customer enquiry in one place?
+- [x] How do I automatically log every customer enquiry in one place?
 - [ ] How can I build a WhatsApp booking bot for a small hotel?
 - [ ] How do I connect a website contact form to my CRM automatically?
 - [ ] How can I verify payment receipts automatically instead of checking them by hand?
@@ -65,3 +65,9 @@ Topics you add by hand are used first.
 - [ ] Why do some Gmail meeting invites show "Add to Calendar" while others are added automatically?
 - [ ] WhatsApp web: group is muted, but still shows desktop notifications, how to fix?
 - [ ] Conditional Formatting in Google Sheets Not Working For 1 of 4 Conditions I Made, Why?
+- [ ] What a monthly "receipt" for an n8n workflow looks like (and what it can't prove)?
+- [ ] Feeling Stuck While Learning n8n – Is It Normal?
+- [ ] How to Set Up an Error Workflow in n8n Before Production Fails?
+- [ ] Best workflow to import Parasolid (.x_t) CAD models into Blender for Unity?
+- [ ] How to configure automatic redirect to HTTPS?
+- [ ] Google Web Risk Lookup API: Can threat results be cached and reused across users until expireTime?
